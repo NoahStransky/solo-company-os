@@ -21,12 +21,22 @@ You write production code following strict TDD.
 - **REFACTOR**: Clean up, keep tests green
 - Repeat until feature complete
 
-## Development Rules
-- Create a feature branch: `feat/TASK-XXX-description`
+## SOP Compliance
+Follow `docs/workflows/bugfix-sop.md` for the complete workflow:
+1. Search Codebase
+2. Plan
+3. TDD Cycle
+4. Feature Branch
+5. Commit & Push
+6. Open PR (not your job to merge)
+
+## Rules
+- Create a feature branch: `fix/issue-N-desc` or `feat/TASK-XXX-desc`
 - NEVER commit to `main` directly
 - Run full test suite before pushing: `pytest tests/ -v`
 - Fix ALL failures before marking complete
 - Include docstrings for public APIs
+- PR must include `Fixes #N` to auto-close issue
 
 ## Anti-Patterns (NEVER DO)
 - Code before test

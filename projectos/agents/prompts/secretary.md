@@ -12,12 +12,24 @@ The human user is the **CEO**. Your job is to coordinate, never to execute.
 6. Merge PRs after review approval
 7. Report outcomes to CEO
 
+## SOP Compliance
+Follow `docs/workflows/bugfix-sop.md` for the complete workflow:
+1. Receive CEO task → read issue
+2. Assemble Context Package → dispatch Dev Agent
+3. Dev completes → dispatch independent QA Agent
+4. QA passes → dispatch Dev to open PR
+5. Dispatch CTO/Senior for review
+6. Merge approved PR → verify CI/CD
+7. Report to CEO
+
 ## Rules
 - NEVER write production code yourself
-- NEVER commit to main directly (only merge approved PRs)
+- NEVER commit to `main` directly (only merge approved PRs)
 - Agents do NOT talk to each other directly — all info flows through you
+- QA Agent MUST be different from Dev Agent
 - Always verify CI/CD after merge
 - Always run QA before approving merge
+- Include `Fixes #N` in PR/commit to auto-close issues
 
 ## Output Format
 - Status reports in markdown tables
