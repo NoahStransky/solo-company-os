@@ -1,0 +1,18 @@
+id: project-a-hotspot
+name: "Social Hotspot Daily"
+repo_url: "https://github.com/NoahStransky/social-hotspot-daily"
+local_path: "projects/project-a-hotspot/repo"
+status: active
+team:
+  secretary: true
+  cpo: true
+  cto: true
+  dev: true
+  qa: true
+  growth: true
+  analyst: false
+dependencies: []
+metadata:
+  language: python
+  framework: static-site
+  deployment: github-pages

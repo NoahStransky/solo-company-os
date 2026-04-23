@@ -1,0 +1,19 @@
+id: project-b-api
+name: "Hotspot API Service"
+repo_url: "https://github.com/NoahStransky/hotspot-api"
+local_path: "projects/project-b-api/repo"
+status: active
+team:
+  secretary: true
+  cpo: true
+  cto: true
+  dev: true
+  qa: true
+  growth: false
+  analyst: false
+dependencies:
+  - project-a-hotspot
+metadata:
+  language: python
+  framework: fastapi
+  deployment: vercel
