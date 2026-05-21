@@ -5,6 +5,7 @@ from .state import StateManager
 from .scheduler import AgentScheduler
 from .dependency import DependencyManager, CycleError
 from .dashboard import Dashboard
+from .solo_adapter import SoloProjectAdapter, SoloCommandError
 
 __all__ = [
     "Project",
@@ -16,4 +17,6 @@ __all__ = [
     "DependencyManager",
     "CycleError",
     "Dashboard",
+    "SoloProjectAdapter",
+    "SoloCommandError",
 ]

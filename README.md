@@ -1,36 +1,37 @@
-# 🏢 ProjectOS — Multi-Project AI Agent Command Center
+# ProjectOS / solo-os — Multi-Project Solo Control Plane
 
-ProjectOS is the orchestration layer for running **multiple Solo Company AI Agent teams** in parallel.
+ProjectOS is the control plane for multiple initialized `solo` projects. It does not replace the single-project `solo` runtime; it registers projects, reads their `.solo/` protocol, calls public `solo ... --json` commands, and renders a global dashboard.
 
 ## Problem
 
-You have N projects. Each project needs its own team of AI Agents (CTO, Dev, QA, Growth...).
-How do you manage them all without chaos?
+You have N initialized `solo` projects. Each project owns its own workflow, task state, messages, artifacts, retry state, and runtime config.
+
+How do you see and coordinate them without opening every repository?
 
 ## Solution
 
 ProjectOS provides:
 
-- **Project Registry** — Track all projects with their repos, teams, and status
-- **Agent Scheduler** — Allocate AI Agents across projects without conflicts
-- **State Manager** — Persist task states, recover from crashes
-- **Dependency Manager** — Handle cross-project dependencies (e.g., API → Frontend)
-- **Dashboard CLI** — One command to see everything: `python -m projectos list`
+- **Project Registry** — Register existing projects that contain `.solo/config.yaml`
+- **Solo Adapter** — Call `solo status --json`, `solo inspect --json`, `solo validate --json`, and `solo dispatch --json`
+- **Dashboard CLI** — Show health and task summaries across projects
+- **Dependency Manager** — Track cross-project dependencies
+- **Read-only First** — Prefer status/inspect/validate before mutating child projects
 
 ## Architecture
 
-```
+```text
 CEO (Human)
   ↓
-Secretary Agent
+solo-os CLI / Dashboard
   ↓
 ┌─────────────────────────────────────────┐
-│           ProjectOS Core                │
-│  Registry → Scheduler → State → Deps   │
+│             ProjectOS Core              │
+│ Registry → Solo Adapter → Dashboard     │
 └─────────────────────────────────────────┘
   ↓                    ↓                  ↓
-Project A (Hotspot)  Project B (API)   Project C (Landing)
-  Solo Company         Solo Company      Solo Company
+Project A            Project B          Project C
+.solo/ protocol      .solo/ protocol    .solo/ protocol
 ```
 
 ## Quick Start
@@ -39,52 +40,55 @@ Project A (Hotspot)  Project B (API)   Project C (Landing)
 # Install
 pip install -e .
 
-# See all projects
-python -m projectos list
+# Register an initialized solo project
+solo-os project add ../my-solo-project --id my-solo-project
 
-# Register a new project
-python -m projectos create "My Project" --repo https://github.com/user/repo
+# See all registered projects
+solo-os list --json
 
-# Check project status
-python -m projectos status my-project
+# Check project status through solo status --json
+solo-os status my-solo-project --json
 
-# View dependency graph
-python -m projectos deps --visualize
+# Inspect a task through solo inspect --json
+solo-os inspect my-solo-project --task TASK-...
+
+# Validate child project protocol
+solo-os validate my-solo-project --json
+
+# Dispatch into a child solo project
+solo-os dispatch my-solo-project "Build RSS import"
 ```
 
-## Example Projects
+If `solo` is not installed on `PATH`, point ProjectOS at it:
 
-Two example projects are included:
-
-| Project | Description | Dependencies |
-|---------|-------------|--------------|
-| `project-a-hotspot` | AI tech news aggregator | None |
-| `project-b-api` | FastAPI service for hotspot data | `project-a-hotspot` |
+```bash
+export PYTHONPATH="../solo-company-architecture/src:$PYTHONPATH"
+export SOLO_OS_SOLO_COMMAND="python -m solo"
+```
 
 ## Project Structure
 
-```
+```text
 solo-company-os/
-├── projectos/              # Core framework
-│   ├── core/               # Registry, Scheduler, State, Deps, Dashboard
-│   ├── agents/prompts/     # Agent system prompts (CTO, Dev, QA...)
+├── projectos/
+│   ├── core/               # Registry, Solo Adapter, Deps, Dashboard
+│   ├── agents/prompts/     # Legacy prompt assets
 │   └── __main__.py         # CLI entry point
-├── projects/               # Project sandboxes
-│   ├── project-a-hotspot/
-│   └── project-b-api/
+├── projects/               # Example project records
 ├── tests/                  # pytest suite
-└── docs/architecture/      # Design docs
+└── docs/                   # Research and design docs
 ```
 
-## Agent Prompts
+## Boundary
 
-Each Agent role has a system prompt template in `projectos/agents/prompts/`:
+ProjectOS should not import `solo.core.*` from child projects and should not write `.solo/state/*` directly. The child project remains the source of truth. ProjectOS talks to it through:
 
-- **secretary.md** — Coordination and dispatch
-- **cto.md** — Architecture design and code review
-- **dev.md** — TDD-driven implementation
-- **qa.md** — Independent testing and validation
-- **growth.md** — Marketing and distribution
+- `.solo/config.yaml`
+- `solo status --json --all`
+- `solo inspect --json`
+- `solo validate --json`
+- `solo migrate --check --json`
+- `solo dispatch --json`
 
 ## Development
 
@@ -92,8 +96,8 @@ Each Agent role has a system prompt template in `projectos/agents/prompts/`:
 # Run tests
 pytest tests/ -v
 
-# Run a specific module test
-pytest tests/test_scheduler.py -v
+# Run the solo integration tests
+pytest tests/test_solo_adapter.py -v
 ```
 
 ## License

@@ -182,11 +182,11 @@ dispatch:
 
 ### 4.2 与项目 solo 配置的交互
 
-solo-os 不重复存储项目的配置，它通过读取项目下的 `.solo/config.yaml` 来获取信息：
+solo-os 不重复存储项目的配置，它通过读取项目下的 `.solo/config.yaml` 和调用公开 `solo ... --json` 命令来获取信息。它不 import `solo.core.*`，也不直接写 `.solo/state/*`。
 
 ```python
 class SoloOSProject:
-    """表示一个已注册的 solo 项目"""
+    """表示一个已注册的 solo 项目；只依赖文件协议和 CLI contract."""
     
     def __init__(self, path: str):
         self.path = Path(path)
@@ -195,22 +195,14 @@ class SoloOSProject:
     
     def dispatch(self, agent_role: str, task: str):
         """向此项目的 secretary 派任务"""
-        # 使用该项目的模型配置
-        model_config = self.config["agents"][agent_role]
-        delegate_task(
-            goal=task,
-            model=model_config,
-            context=self.config["project"],
+        return run(
+            ["solo", "dispatch", "--to", agent_role, "--json", task],
+            cwd=self.path,
         )
     
     def get_status(self) -> dict:
         """获取项目当前状态"""
-        tasks = self.state.get("tasks", [])
-        return {
-            "name": self.config["project"]["name"],
-            "active_tasks": [t for t in tasks if t["status"] == "in_progress"],
-            "last_updated": tasks[-1]["updated_at"] if tasks else None,
-        }
+        return run(["solo", "status", "--json", "--all"], cwd=self.path)
 ```
 
 ### 4.3 大需求 Orchestration 设计

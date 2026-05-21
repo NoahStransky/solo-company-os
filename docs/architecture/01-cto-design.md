@@ -8,7 +8,12 @@ ProjectOS 是 Solo Company 的**多项目指挥中心**。
 
 在多项目时代，ProjectOS = 1 CEO + 1 Secretary + N 套 Agents → N 个项目。
 
-ProjectOS 不替代 Agents，它**调度 Agents**。
+ProjectOS 不替代单项目 `solo`，也不 import `solo.core.*`。当前实现优先作为 read-only/control-plane：
+
+- 注册已有 `.solo/config.yaml` 的项目。
+- 通过公开 `solo ... --json` 命令读取状态、详情、健康检查。
+- 必要时通过 `solo dispatch --json` 把任务派进子项目。
+- 不直接写子项目 `.solo/state/*`，子项目仍是状态源。
 
 ## 2. 核心概念
 

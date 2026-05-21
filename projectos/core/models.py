@@ -11,6 +11,9 @@ class Project:
     repo_url: str
     local_path: str
     status: str = "active"  # active | paused | archived
+    kind: str = "legacy"  # solo | legacy
+    protocol_version: int = 0
+    health: str = "unknown"  # unknown | healthy | unhealthy | missing
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     team: Dict[str, bool] = field(default_factory=lambda: {
         "secretary": True,
