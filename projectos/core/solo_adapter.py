@@ -85,6 +85,28 @@ class SoloProjectAdapter:
         args.append(task)
         return self._run_json(args)
 
+    def run(self, until: str = "done", task_id: str = "") -> Dict[str, Any]:
+        args = ["run", "--until", until, "--json"]
+        if task_id:
+            args.extend(["--task", task_id])
+        return self._run_json(args)
+
+    def retry(self, task_id: str, phase: str = "", agent: str = "") -> Dict[str, Any]:
+        args = ["retry", "--json"]
+        if task_id:
+            args.extend(["--task", task_id])
+        if phase:
+            args.extend(["--phase", phase])
+        if agent:
+            args.extend(["--agent", agent])
+        return self._run_json(args)
+
+    def reopen(self, task_id: str, phase: str) -> Dict[str, Any]:
+        args = ["reopen", "--phase", phase, "--json"]
+        if task_id:
+            args.extend(["--task", task_id])
+        return self._run_json(args)
+
     def _run_json(self, args: List[str], allow_failure: bool = False) -> Dict[str, Any]:
         command = [*self.solo_command, *args]
         completed = subprocess.run(
